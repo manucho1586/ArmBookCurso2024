@@ -1,4 +1,5 @@
 #include "Dht11.h"
+#include "arm_book_lib.h"
 
 Dht11::Dht11(PinName const &p) : _pin(p) {
     // Set creation time so we can make 
@@ -27,7 +28,7 @@ int Dht11::read()
     // Notify it we are ready to read
     _pin.output();
     _pin = 0;
-    wait_ms(18);
+    delay(18);
     _pin = 1;
     wait_us(40);
     _pin.input();

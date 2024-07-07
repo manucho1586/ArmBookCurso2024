@@ -1,27 +1,25 @@
 #include "mbed.h"
-#include "DHT.h"
+#include "Dht11.h"
 #include "arm_book_lib.h"
+
+static UnbufferedSerial pc(USBTX, USBRX);
 
 int main()
 {
     DigitalIn B1(BUTTON1);
-    DHT sensor(D1, DHT::DHT11);
+    Dht11 sensor(D1);
     DigitalOut Teyu(LED1);
-    UnbufferedSerial pc(USBTX, USBRX, 9600);
-    char buffer[10];
+    char buffer[9];
+
+    // Set desired properties (9600-8-N-1).
+    pc.baud(9600);
+    pc.format(8, SerialBase::None, 1);
 
     while (true)
     {
         Teyu = !B1;
-        delay(3);
-        int err = sensor.read();
-        if(err == DHT::SUCCESS)
-        {
-            sprintf(buffer, "T: %.2f\r\n", sensor.getTemperature(DHT::CELCIUS));
-        } 
-        else 
-        {
-            pc.write(buffer, 10);
-        }
+        sprintf(buffer, "T: %.2d", sensor.getCelsius());
+        pc.write(buffer,9);
+        delay(2000);
     }
 }
