@@ -16,7 +16,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "DHT11.h"
+#include "dht11.h"
 
 // Constructor
 DHT11::DHT11(PinName pin) : io(pin, PIN_INPUT, OpenDrain, 1), io_irq(pin)
