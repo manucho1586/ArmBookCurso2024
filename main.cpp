@@ -21,7 +21,7 @@ int main()
     LED_rojo=OFF;
     LED_verde=ON;
     ventilador=OFF;
-    buzzer=OFF;
+    buzzer=LOW;    //Apagado
 
     // Set desired properties (9600-8-N-1).
     pc.baud(9600);
@@ -35,7 +35,7 @@ int main()
             {
                 LED_rojo=ON;
                 LED_verde=OFF;
-                buzzer=ON;
+                buzzer=HIGH;
             }
             if(ventilador==OFF)
             {
@@ -49,16 +49,16 @@ int main()
                 LED_verde=ON;
                 LED_rojo=OFF;
                 ventilador=OFF;
-                buzzer=OFF;
+                buzzer=LOW;
             }
         }
-        if(boton_buzzer==OFF)
+        if(boton_buzzer==LOW)
         {
             buzzer=!buzzer;
         }
-        if(boton_ventilador)
+        if(boton_ventilador==LOW)
         {
-            ventilador=ventilador;
+            ventilador=!ventilador;
         }
         s=d.readData();
         //printf("T:%d, H:%d\r\n", d.readTemperature(), d.readHumidity()); // esta instrucción ya imprime en pantala del monitor serie.
