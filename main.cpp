@@ -18,6 +18,9 @@ int main()
     char buffer[16];
     int s;
     int umbral=20;
+    int tiempo_acumulado=0;
+    int tiempo_incremento=10;
+    int cont=0;
     LED_rojo=OFF;
     LED_verde=ON;
     ventilador=OFF;
@@ -36,10 +39,7 @@ int main()
                 LED_rojo=ON;
                 LED_verde=OFF;
                 buzzer=HIGH;
-            }
-            if(ventilador==OFF)
-            {
-                ventilador=ON;
+                ventilador=HIGH;
             }
         }
         else
@@ -48,22 +48,45 @@ int main()
             {
                 LED_verde=ON;
                 LED_rojo=OFF;
-                ventilador=OFF;
+                ventilador=LOW;
                 buzzer=LOW;
             }
         }
-        if(boton_buzzer==LOW)
+        while(boton_buzzer==LOW)
         {
-            buzzer=!buzzer;
+            delay(1);
+            if(boton_buzzer==LOW && cont<=120)
+            {
+                cont++;
+                if(cont==120)
+                {
+                    buzzer=!buzzer;
+                    cont=0;
+                }
+            }
         }
-        if(boton_ventilador==LOW)
+        while(boton_ventilador==LOW)
         {
-            ventilador=!ventilador;
+            delay(1);
+            if(boton_ventilador==LOW && cont<=120)
+            {
+                cont++;
+                if(cont==120)
+                {
+                    ventilador=!ventilador;
+                    cont=0;
+                }
+            }
         }
+        if(tiempo_acumulado==2000)
+        {
         s=d.readData();
         //printf("T:%d, H:%d\r\n", d.readTemperature(), d.readHumidity()); // esta instrucción ya imprime en pantala del monitor serie.
         sprintf(buffer, "T:%d, H:%d\r\n", d.readTemperature(), d.readHumidity());
         pc.write(buffer,16);
-        delay(2000);
+        tiempo_acumulado=0;
+        }
+        delay(10); //delay de 200 ms
+        tiempo_acumulado=tiempo_acumulado + tiempo_incremento;
     }
 }
