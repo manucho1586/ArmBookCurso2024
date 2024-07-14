@@ -3,34 +3,86 @@
 #include "arm_book_lib.h"
 #include <cstdint>
 
+ DigitalOut buzzer(D5);
+ DigitalOut ventilador(D4);
+ DigitalIn boton_buzzer(BUTTON1); 
+ DigitalIn boton_ventilador(D6);
+// Variables de debounce
+Ticker ticker1;
+Ticker ticker2;
+volatile int cont1 = 0;
+volatile bool checking1 = false;
+volatile int cont2 = 0;
+volatile bool checking2 = false;
+
+void check_button_buzzer() {
+    if (boton_buzzer == 0) { // Botón presionado
+        if (checking1) {
+            cont1++;
+            if (cont1 >= 150) {
+                buzzer = !buzzer; // Alternar el estado del buzzer
+                cont1 = 0; // Reiniciar el contador
+                checking1 = false; // Dejar de chequear
+            }
+        } else {
+            checking1 = true; // Comenzar a chequear
+            cont1 = 0; // Reiniciar el contador
+        }
+    } else {
+        checking1 = false; // Botón no presionado
+        cont1 = 0; // Reiniciar el contador
+    }
+}
+
+void check_button_ventilador() {
+    if (boton_ventilador == 0) { // Botón presionado
+        if (checking2) {
+            cont2++;
+            if (cont2 >= 150) {
+                ventilador = !ventilador; // Alternar el estado del buzzer
+                cont2 = 0; // Reiniciar el contador
+                checking2 = false; // Dejar de chequear
+            }
+        } else {
+            checking2 = true; // Comenzar a chequear
+            cont2 = 0; // Reiniciar el contador
+        }
+    } else {
+        checking2 = false; // Botón no presionado
+        cont2 = 0; // Reiniciar el contador
+    }
+}
+
 
 int main()
 {
 //***********Inicialización de comunicación serie***************************//
 
     UnbufferedSerial pc(USBTX, USBRX);      //Configuración de comunicación serie a través de la UART.
-    // Set desired properties (9600-8-N-1).
+    // Establecimiento de configuraciones (9600-8-N-1).
     pc.baud(9600);
     pc.format(8, SerialBase::None, 1);
 //**************************************************************************//
+ticker1.attach(&check_button_ventilador, 0.001);
+ticker2.attach(&check_button_buzzer, 0.001);
 
 //**********Declaracion de entradas y salidas*******************************//
-    DHT11 d(D2);                            //Instancia de una variable de tipo DHT11.
-    DigitalIn boton_buzzer(BUTTON1);        //Boton para activar o desactivar el buzzer.
-    DigitalIn boton_ventilador(D6);         //Boton para activar o desactivar el ventilador.
+    DHT11 sensordht(D2);                            //Instancia de una variable de tipo DHT11.
+    //DigitalIn boton_buzzer(BUTTON1);        //Boton para activar o desactivar el buzzer.
+    //DigitalIn boton_ventilador(D6);         //Boton para activar o desactivar el ventilador.
     DigitalOut LED_rojo(LED1);              //LED indicador de sobretemperatura.
     DigitalOut LED_verde(D3);               //LED indicador de condiciones de temperatura y humedad normales.
-    DigitalOut ventilador(D4);              //Salida para activar el ventilador.
-    DigitalOut buzzer(D5);                  //Salida para activar el buzzer.
+    //DigitalOut ventilador(D4);              //Salida para activar el ventilador.
+    //DigitalOut buzzer(D5);                  //Salida para activar el buzzer.
 //**************************************************************************//
 
 //*********Declaración de variables e inicialización de entradas-salidas****//
     char buffer[16];                        //Buffer donde se almacenará los bytes de datos de temperatura y humedad.
-    int s;                                  //Variable donde se guardan los datos traidos por la función "readData()".     
+    int Lectura;                            //Variable donde se guardan los datos traidos por la función "readData()".     
     int umbral=20;                          //Valor umbral de temperatura.
     int tiempo_acumulado=0;             
     int tiempo_incremento=10;
-    int cont=0;                             //Contador para función antirrebote al presionar botones.
+    //int cont=0;                             //Contador para función antirrebote al presionar botones.
     LED_rojo=OFF;                           //LED indicador de alarma.
     LED_verde=ON;                           //LED indicador de funcionamiento en condiciones normales.
     ventilador=LOW;         
@@ -40,7 +92,7 @@ int main()
 //************************LOOP PRINCIPAL*************************************//
     while (true)
     {
-        if(d.readTemperature()>umbral)      //Condición de sobretemperatura.
+        if(sensordht.readTemperature()>umbral)      //Condición de sobretemperatura.
         {
             if(LED_rojo==OFF)               //Se encienden alarmas (LED + buzzer) y el ventilador.
             {
@@ -64,40 +116,14 @@ int main()
 ///**********Presionado de botón**********************************///
 ///**********Este algoritmo de efecto antirrebote*****************///
 
-        while(boton_buzzer==LOW)
-        {
-            delay(1);
-            if(boton_buzzer==LOW && cont<=150)      
-            {
-                cont++;
-                if(cont==150)
-                {
-                    buzzer=!buzzer;
-                    cont=0;
-                }
-            }
-        }
-        while(boton_ventilador==LOW)
-        {
-            delay(1);
-            if(boton_ventilador==LOW && cont<=150)
-            {
-                cont++;
-                if(cont==150)
-                {
-                    ventilador=!ventilador;
-                    cont=0;
-                }
-            }
-        }
 
 ///***************************************************************///    
         
         if(tiempo_acumulado==2000)            //Condición de tiempo acumulador cumplido.
         {
-        s=d.readData();                       //Lectura de datos del DHT.
+        Lectura=sensordht.readData();                       //Lectura de datos del DHT.
         //printf("T:%d, H:%d\r\n", d.readTemperature(), d.readHumidity()); // esta instrucción ya imprime en pantala del monitor serie.
-        sprintf(buffer, "T:%d, H:%d\r\n", d.readTemperature(), d.readHumidity());
+        sprintf(buffer, "T:%d, H:%d\r\n", sensordht.readTemperature(), sensordht.readHumidity());
         pc.write(buffer,16);                  //Transmisión de los datos ya convertidos a caracteres para presentar en pantalla.
         tiempo_acumulado=0;                   //Reinicio del contador de tiempo acumulador para presentar en pantalla cada 2 segundos los datos leídos del sensor.
         }
