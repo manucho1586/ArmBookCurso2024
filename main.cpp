@@ -17,8 +17,9 @@ volatile int cont1 = 0;             //Contador de retardo cuando se presiona el 
 volatile bool checking1 = false;    //Variable que chequea el estado del botón que se presiona.
 volatile int cont2 = 0;             //Contador de retardo cuando se presiona el botón buzzer.
 volatile bool checking2 = false;    //Variable que chequea el estado del botoón que se presiona.
+ //*************************************************************************//
 
-
+// *********Deteccion de estado y activacion/desactivacion de buzzer********//
 void check_button_buzzer()
  {
     if (boton_buzzer == 0) { // Botón presionado
@@ -38,7 +39,9 @@ void check_button_buzzer()
         cont1 = 0; // Reiniciar el contador
     }
 }
+//*************************************************************************//
 
+// ******Deteccion de estado y activacion/desactivacion de ventilador******//
 void check_button_ventilador() 
 {
     if (boton_ventilador == 0) { // Botón presionado
@@ -58,7 +61,7 @@ void check_button_ventilador()
         cont2 = 0; // Reiniciar el contador
     }
 }
-
+//*************************************************************************//
 
 
 int main()
