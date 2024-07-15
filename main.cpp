@@ -3,19 +3,24 @@
 #include "arm_book_lib.h"
 #include <cstdint>
 
+//**********Declaracion de botones buzzer y ventilador**********************//
  DigitalOut buzzer(D5);
  DigitalOut ventilador(D4);
  DigitalIn boton_buzzer(BUTTON1); 
  DigitalIn boton_ventilador(D6);
-// Variables de debounce
-Ticker ticker1;
-Ticker ticker2;
-volatile int cont1 = 0;
-volatile bool checking1 = false;
-volatile int cont2 = 0;
-volatile bool checking2 = false;
+ //*************************************************************************//
 
-void check_button_buzzer() {
+// *********Variables de debounce*******************************************//
+Ticker ticker1;                     //Instanciación de variable tipo Ticker para manejar la función de presioanr el botón del ventilador.
+Ticker ticker2;                     //Instanciación de variable tipo Ticker para manejar la función de presioanr el botón del buzzer.
+volatile int cont1 = 0;             //Contador de retardo cuando se presiona el botón ventilador.
+volatile bool checking1 = false;    //Variable que chequea el estado del botón que se presiona.
+volatile int cont2 = 0;             //Contador de retardo cuando se presiona el botón buzzer.
+volatile bool checking2 = false;    //Variable que chequea el estado del botoón que se presiona.
+
+
+void check_button_buzzer()
+ {
     if (boton_buzzer == 0) { // Botón presionado
         if (checking1) {
             cont1++;
@@ -34,7 +39,8 @@ void check_button_buzzer() {
     }
 }
 
-void check_button_ventilador() {
+void check_button_ventilador() 
+{
     if (boton_ventilador == 0) { // Botón presionado
         if (checking2) {
             cont2++;
@@ -54,6 +60,7 @@ void check_button_ventilador() {
 }
 
 
+
 int main()
 {
 //***********Inicialización de comunicación serie***************************//
@@ -63,8 +70,10 @@ int main()
     pc.baud(9600);
     pc.format(8, SerialBase::None, 1);
 //**************************************************************************//
-ticker1.attach(&check_button_ventilador, 0.001);
-ticker2.attach(&check_button_buzzer, 0.001);
+
+ticker1.attach(&check_button_ventilador, 0.001);   //Se configura ticker1 para llamar a la funcion cada 1 ms.
+ticker2.attach(&check_button_buzzer, 0.001);       //Se configura ticker2 para llamar a la funcion cada 1 ms.
+//*************************************************************************//
 
 //**********Declaracion de entradas y salidas*******************************//
     DHT11 sensordht(D2);                            //Instancia de una variable de tipo DHT11.
@@ -82,7 +91,7 @@ ticker2.attach(&check_button_buzzer, 0.001);
     int umbral=20;                          //Valor umbral de temperatura.
     int tiempo_acumulado=0;             
     int tiempo_incremento=10;
-    //int cont=0;                             //Contador para función antirrebote al presionar botones.
+    //int cont=0;                            //Contador para función antirrebote al presionar botones.
     LED_rojo=OFF;                           //LED indicador de alarma.
     LED_verde=ON;                           //LED indicador de funcionamiento en condiciones normales.
     ventilador=LOW;         
