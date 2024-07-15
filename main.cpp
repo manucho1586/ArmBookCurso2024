@@ -93,7 +93,7 @@ ticker2.attach(&check_boton_buzzer, 0.001);       //Se configura ticker2 para ll
     int Lectura;                                   //Variable donde se guardan los datos traidos por la función "readData()".     
     int umbral=20;                                 //Valor umbral de temperatura.
     int tiempo_acumulado=0;             
-    int tiempo_incremento=10;
+    int tiempo_incremento=1;
     //int cont=0;                                  //Contador para función antirrebote al presionar botones.
     LED_rojo=OFF;                                  //LED indicador de alarma.
     LED_verde=ON;                                  //LED indicador de funcionamiento en condiciones normales.
@@ -134,7 +134,7 @@ ticker2.attach(&check_boton_buzzer, 0.001);       //Se configura ticker2 para ll
         pc.write(buffer,16);                  //Transmisión de los datos ya convertidos a caracteres para presentar en pantalla.
         tiempo_acumulado=0;                   //Reinicio del contador de tiempo acumulador para presentar en pantalla cada 2 segundos los datos leídos del sensor.
         }
-        delay(10); //delay de 10 ms
+        delay(1); //delay de 1 ms
         tiempo_acumulado=tiempo_acumulado + tiempo_incremento;
     }
 }
