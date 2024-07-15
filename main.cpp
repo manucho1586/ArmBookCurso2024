@@ -20,7 +20,7 @@ volatile bool checking2 = false;    //Variable que chequea el estado del botoón
  //*************************************************************************//
 
 // *********Deteccion de estado y activacion/desactivacion de buzzer********//
-void check_button_buzzer()
+void check_boton_buzzer()
  {
     if (boton_buzzer == 0) {                                // Botón presionado
         if (checking1) {
@@ -42,7 +42,7 @@ void check_button_buzzer()
 //*************************************************************************//
 
 // ******Deteccion de estado y activacion/desactivacion de ventilador******//
-void check_button_ventilador() 
+void check_boton_ventilador() 
 {
     if (boton_ventilador == 0) {                            // Botón presionado
         if (checking2) {
@@ -74,8 +74,8 @@ int main()
 //**************************************************************************//
 
 //***********LLamado a las funciones cada 1 ms******************************//
-ticker1.attach(&check_button_ventilador, 0.001);   //Se configura ticker1 para llamar a la funcion cada 1 ms.
-ticker2.attach(&check_button_buzzer, 0.001);       //Se configura ticker2 para llamar a la funcion cada 1 ms.
+ticker1.attach(&check_boton_ventilador, 0.001);   //Se configura ticker1 para llamar a la funcion cada 1 ms.
+ticker2.attach(&check_boton_buzzer, 0.001);       //Se configura ticker2 para llamar a la funcion cada 1 ms.
 //*************************************************************************//
 
 //**********Declaracion de entradas y salidas*******************************//
